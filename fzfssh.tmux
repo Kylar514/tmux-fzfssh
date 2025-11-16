@@ -39,6 +39,7 @@ handle_binds() {
     bind_multi_ssh=$(tmux_option "@fzfssh-bind-multi-ssh" "ctrl-m")
     bind_actions=$(tmux_option "@fzfssh-bind-actions" "ctrl-a")
     bind_custom_command=$(tmux_option "@fzfssh-bind-custom-command" "ctrl-n")
+    bind_convert_json=$(tmux_option "@fzfssh-bind-convert-json" "ctrl-r")
 }
 
 handle_args() {
@@ -48,7 +49,8 @@ handle_args() {
     fi
 
     ALLHOSTS="$bind_all_hosts:reload($SCRIPTS_DIR/list_default.sh)"
-    FZFSSH2="$bind_category:reload($SCRIPTS_DIR/list_category.sh)"
+    CATEGORY="$bind_category:reload($SCRIPTS_DIR/list_category.sh)"
+    CONVERTJSON="$bind_convert_json:reload(pwsh $SCRIPTS_DIR/convert_to_json.ps1 >/dev/null 2>&1; $SCRIPTS_DIR/list_default.sh)"
 
 	KILL_SESSION="$bind_kill_session:execute-silent(tmux kill-session -t {})+reload(${SCRIPTS_DIR%/}/reload_sessions.sh)"
 
@@ -67,8 +69,9 @@ handle_args() {
         --bind "$bind_select_down:down"
         --bind "$bind_scroll_up:preview-half-page-up"
         --bind "$bind_scroll_down:preview-half-page-down"
-        --bind "$FZFSSH2"
+        --bind "$CATEGORY"
         --bind "$ALLHOSTS"
+        --bind "$CONVERTJSON"
         # --bind "$bind_all_hosts:all-hosts"
         # --bind "$bind_category:category"
         # --bind "$bind_multi_ssh:multi_ssh"

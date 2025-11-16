@@ -34,7 +34,7 @@ handle_binds() {
     bind_scroll_down=$(tmux_option "@fzfssh-bind-scroll-down" "ctrl-d")
     bind_select_up=$(tmux_option "@fzfssh-bind-select-up" "ctrl-p")
     bind_select_down=$(tmux_option "@fzfssh-bind-select-down" "ctrl-n")
-    bind_all_hosts=$(tmux_option "@fzfssh-bind-all-hosts" "ctrl-h")
+    bind_all_hosts=$(tmux_option "@fzfssh-bind-all-hosts" "ctrl-a")
     bind_category=$(tmux_option "@fzfssh-bind-category" "ctrl-c")
     bind_multi_ssh=$(tmux_option "@fzfssh-bind-multi-ssh" "ctrl-m")
     bind_actions=$(tmux_option "@fzfssh-bind-actions" "ctrl-a")
@@ -46,6 +46,11 @@ handle_args() {
     if [[ "$preview_enabled" == "true" ]]; then
         PREVIEW_LINE="$SCRIPTS_DIR/preview.sh {}"
     fi
+
+    ALLHOSTS="$bind_all_hosts:reload($SCRIPTS_DIR/list_default.sh)"
+    FZFSSH2="$bind_category:reload($SCRIPTS_DIR/fzfssh2.sh)"
+
+	KILL_SESSION="$bind_kill_session:execute-silent(tmux kill-session -t {})+reload(${SCRIPTS_DIR%/}/reload_sessions.sh)"
 
 	HEADER="$bind_accept=󰿄  $bind_all_hosts=󱂧  $bind_category=󱂧  $bind_multi_ssh=  $bind_actions=󱃖  $bind_custom_command=󰌍  $bind_scroll_up=  $bind_scroll_down= "
 
@@ -62,6 +67,8 @@ handle_args() {
         --bind "$bind_select_down:down"
         --bind "$bind_scroll_up:preview-half-page-up"
         --bind "$bind_scroll_down:preview-half-page-down"
+        --bind "$FZFSSH2"
+        --bind "$ALLHOSTS"
         # --bind "$bind_all_hosts:all-hosts"
         # --bind "$bind_category:category"
         # --bind "$bind_multi_ssh:multi_ssh"
@@ -90,7 +97,7 @@ hotkey=$(tmux_option "@fzfssh-bind" "c-f")
 prefix_on=$(tmux_option "@fzfssh-prefix" "on")
 
 if [ "$prefix_on" = "on" ]; then
-    tmux bind-key "$hotkey" run-shell "$CURRENT_DIR/scripts/fzfssh.sh"
+    tmux bind-key "$hotkey" run-shell "$SCRIPTS_DIR/fzfssh.sh"
 else
-    tmux bind-key -n "$hotkey" run-shell "$CURRENT_DIR/scripts/fzfssh.sh"
+    tmux bind-key -n "$hotkey" run-shell "$SCRIPTS_DIR/fzfssh.sh"
 fi

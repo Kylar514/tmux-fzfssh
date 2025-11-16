@@ -48,7 +48,7 @@ handle_args() {
     fi
 
     ALLHOSTS="$bind_all_hosts:reload($SCRIPTS_DIR/list_default.sh)"
-    FZFSSH2="$bind_category:reload($SCRIPTS_DIR/fzfssh2.sh)"
+    FZFSSH2="$bind_category:reload($SCRIPTS_DIR/list_category.sh)"
 
 	KILL_SESSION="$bind_kill_session:execute-silent(tmux kill-session -t {})+reload(${SCRIPTS_DIR%/}/reload_sessions.sh)"
 

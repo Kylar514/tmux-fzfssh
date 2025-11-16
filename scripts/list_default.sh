@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Output the parsed list
-cat "$CURRENT_DIR/hosts.txt"
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+"$CURRENT_DIR/parsers/parse_default.sh"

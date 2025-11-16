@@ -1,30 +1,17 @@
 $sshConfig = "$HOME\.ssh\config"
-$outputFile = "$HOME/.ssh/config.json"
+$outputFile = "$HOME/.ssh\config.json"
 
 $lines = Get-Content $sshConfig -ErrorAction Stop
 
 $hosts = @()
 $hostEntry = $null
-$pendingComment = $null
 
 foreach ($line in $lines)
 {
     $trimmed = $line.Trim()
 
     if ([string]::IsNullOrWhiteSpace($trimmed))
-    {
-        $pendingComment = $null
-        continue
-    }
-
-    if ($trimmed -match '^#\s*category\s+(.+)$')
-    {
-        $pendingComment = @{Category = $matches[1]; Comment = $null}
-        continue
-    } elseif ($trimmed -match '^#\s*(.+)$' -and $trimmed -notmatch '^#+[- ]+$')
-    {
-        $pendingComment = @{Category = $null; Comment = $matches[1]}
-        continue
+    { continue 
     }
 
     if ($trimmed -match '^Host\s+(.+)$')
@@ -32,7 +19,7 @@ foreach ($line in $lines)
         if ($hostEntry -and $hostEntry.Host)
         { $hosts += $hostEntry 
         }
-        
+
         $hostEntry = [ordered]@{
             Host = $matches[1]
             HostName = $null
@@ -42,18 +29,25 @@ foreach ($line in $lines)
             Category = $null
             Comment = $null
         }
-
-        if ($pendingComment)
-        {
-            $hostEntry.Category = $pendingComment.Category
-            $hostEntry.Comment  = $pendingComment.Comment
-            $pendingComment = $null
-        }
         continue
     }
 
     if (-not $hostEntry)
     { continue 
+    }
+
+    if ($trimmed -match '^#\s*category\s+(.+)$')
+    {
+        $hostEntry.Category = $matches[1]
+        continue
+    }
+
+    elseif ($trimmed -match '^#\s*(.+)$' -and $trimmed -notmatch '^#+[- ]+$')
+    {
+        if (-not $hostEntry.Comment)
+        { $hostEntry.Comment = $matches[1] 
+        }
+        continue
     }
 
     if ($trimmed -match '^HostName\s+(.+)$')

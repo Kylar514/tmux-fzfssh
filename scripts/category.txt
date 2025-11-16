@@ -1,0 +1,6 @@
+personal
+Azure
+prod
+qa
+backup
+test

@@ -4,9 +4,6 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$CURRENT_DIR/scripts"
 ACTIONS_DIR="$CURRENT_DIR/scripts/actions"
 
-# source "$SCRIPTS_DIR/parser.sh"
-# source "$SCRIPTS_DIR/actions.sh"
-
 tmux_option() {
     local option_value
     option_value="$(tmux show-option -gqv "$1")"
@@ -48,8 +45,8 @@ handle_args() {
         PREVIEW_LINE="$SCRIPTS_DIR/preview.sh {}"
     fi
 
-    ALLHOSTS="$bind_all_hosts:reload($SCRIPTS_DIR/list_default.sh)"
-    CATEGORY="$bind_category:reload($SCRIPTS_DIR/list_category.sh)"
+    ALLHOSTS="$bind_all_hosts:reload($SCRIPTS_DIR/list_hosts.sh)"
+    CATEGORY="$bind_category:reload(\"$SCRIPTS_DIR/list_hosts.sh\" Category)"
     CONVERTJSON="$bind_convert_json:reload(pwsh $SCRIPTS_DIR/convert_to_json.ps1 >/dev/null 2>&1; $SCRIPTS_DIR/list_default.sh)"
 
 	KILL_SESSION="$bind_kill_session:execute-silent(tmux kill-session -t {})+reload(${SCRIPTS_DIR%/}/reload_sessions.sh)"
@@ -72,17 +69,10 @@ handle_args() {
         --bind "$CATEGORY"
         --bind "$ALLHOSTS"
         --bind "$CONVERTJSON"
-        # --bind "$bind_all_hosts:all-hosts"
-        # --bind "$bind_category:category"
-        # --bind "$bind_multi_ssh:multi_ssh"
-        # --bind "$bind_actions:actions"
-        # --bind "$bind_custom_command:custom-command"
         --pointer "$pointer_icon"
         --layout "$layout_mode"
         --prompt "$prompt_icon"
         --header "$HEADER"
-        --preview "$PREVIEW_LINE"
-        --preview-window "$preview_location,$preview_ratio,,"
         "${fzf_size_arg[@]}"
         --exit-0
         --print-query

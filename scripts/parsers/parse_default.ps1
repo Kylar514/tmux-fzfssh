@@ -13,6 +13,7 @@ foreach ($entry in $hosts)
     $commentWidth = 50
     $hostNameWidth = 15
     $proxyWidth = 20
+    $metaWidth = 20
 
     $hostAlias = $entry.Host
     $comment = $entry.Comment
@@ -22,8 +23,9 @@ foreach ($entry in $hosts)
     } else
     { "-"
     }
+    
+    $meta="Host"
+    $formatString = "{0, -$hostAliasWidth} {1, -$commentWidth} {2, -$hostNameWidth} {3, $proxyWidth} {4, $metaWidth}"
 
-    $formatString = "{0, -$hostAliasWidth} {1, -$commentWidth} {2, -$hostNameWidth} {3, $proxyWidth}"
-
-    Write-Output ($formatString -f $hostAlias, $comment, $hostName, $proxy)
+    Write-Output ($formatString -f $hostAlias, $comment, $hostName, $proxy, $meta)
 }

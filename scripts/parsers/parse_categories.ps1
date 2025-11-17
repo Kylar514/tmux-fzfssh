@@ -22,9 +22,11 @@ foreach ($entry in $hosts)
 $uniqueProxyAndCategories = $proxyAndCategories | Sort-Object -Unique
 
 $valueWidth = 40
-$formatString = "{0, -$valueWidth}"
+$metaWidth = 40
+$meta = "Category"
+$formatString = "{0, -$valueWidth} {1, -$metaWidth}"
 
 foreach ($value in $uniqueProxyAndCategories)
 {
-    Write-Output ($formatString -f $value)
+    Write-Output ($formatString -f $value, $meta)
 }

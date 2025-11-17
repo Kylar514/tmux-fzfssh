@@ -81,7 +81,7 @@ handle_args() {
         --layout "$layout_mode"
         --prompt "$prompt_icon"
         --header "$HEADER"
-        --preview "$PREVIEW_LINE"
+        # --preview "$PREVIEW_LINE"
         --preview-window "$preview_location,$preview_ratio,,"
         "${fzf_size_arg[@]}"
         --exit-0

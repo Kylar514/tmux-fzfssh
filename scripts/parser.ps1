@@ -1,36 +1,3 @@
-# $sshJsonFile = "$HOME/.ssh/config.json"
-#
-# if (-not (Test-Path $sshJsonFile))
-# {
-#     Write-Error "SSH JSON file not found at $sshJsonFile.  Run Convert to Json first."
-# }
-#
-# $hosts = Get-Content $sshJsonFile | ConvertFrom-Json
-#
-# foreach ($entry in $hosts)
-# {
-#     $hostAliasWidth = 25
-#     $commentWidth = 50
-#     $hostNameWidth = 15
-#     $proxyWidth = 20
-#     $metaWidth = 20
-#
-#     $hostAlias = $entry.Host
-#     $comment = $entry.Comment
-#     $hostName = $entry.Hostname
-#     $proxy = if ($entry.ProxyJump)
-#     { $entry.ProxyJump 
-#     } else
-#     { "-"
-#     }
-#     
-#     $meta="Host"
-#     $formatString = "{0, -$hostAliasWidth} {1, -$commentWidth} {2, -$hostNameWidth} {3, $proxyWidth} {4, $metaWidth}"
-#
-#     Write-Output ($formatString -f $hostAlias, $comment, $hostName, $proxy, $meta)
-# }
-#
-
 param (
     [string]$Filter
 )
@@ -45,18 +12,15 @@ if (-not (Test-Path $sshJsonFile))
 
 $hosts = Get-Content $sshJsonFile | ConvertFrom-Json
 
-# Widths for host display
 $hostAliasWidth = 25
 $commentWidth = 50
 $hostNameWidth = 15
 $proxyWidth = 20
 $metaWidth = 20
 
-# Widths for category display
 $valueWidth = 40
 $categoryMetaWidth = 40
 
-# If no filter provided, show all hosts
 if (-not $Filter)
 {
     foreach ($entry in $hosts)
@@ -73,9 +37,7 @@ if (-not $Filter)
         $formatString = "{0, -$hostAliasWidth} {1, -$commentWidth} {2, -$hostNameWidth} {3, -$proxyWidth} {4, -$metaWidth}"
         Write-Output ($formatString -f $hostAlias, $comment, $hostName, $proxy, $meta)
     }
-}
-# If filter is 'list', show all unique categories and proxies
-elseif ($Filter -eq "list")
+} elseif ($Filter -eq "Category")
 {
     $proxyAndCategories = @()
 
@@ -97,9 +59,7 @@ elseif ($Filter -eq "list")
     {
         Write-Output ($formatString -f $value, $meta)
     }
-}
-# Otherwise, treat filter as a category or proxy
-else
+} else
 {
     $filteredHosts = $hosts | Where-Object { 
         $_.Category -eq $Filter -or $_.ProxyJump -eq $Filter 

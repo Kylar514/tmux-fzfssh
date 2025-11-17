@@ -2,14 +2,14 @@
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# 1. Load prebuilt arguments from tmux
 eval $(tmux show-option -gqv @fzfssh-_built-args)
 
-# 2. Handle the selection
 run_fzf() {
     local list_script="$1"
+    shift
+    local script_args=("$@")
 
-    LIST=$("$CURRENT_DIR/$list_script" | fzf "${args[@]}")
+    LIST=$("$CURRENT_DIR/$list_script" "${script_args[@]}" | fzf "${args[@]}")
 
     if [[ -n "$LIST" ]]; then
         line="${LIST%"${LIST##*[![:space:]]}"}"
@@ -17,14 +17,8 @@ run_fzf() {
         TYPE="${line##* }"
         SELECTED="${line%% *}"
 
-        # echo "Selected: $DISPLAY"
-        # echo "TYPE: $TYPE"
-
         case "$TYPE" in
             Host)
-                # HOSTNAME="${DISPLAY%% *}"
-                # echo "SSH to host: $HOSTNAME"
-                # return 0
                 echo "Selected: $SELECTED"
                 echo "TYPE: $TYPE"
                 ;;
@@ -33,10 +27,10 @@ run_fzf() {
                 return 0
                 ;;
             Category)
-                echo "Reloading FZF with default list..."
-                echo "Selected: $SELECTED"
-                # Recursive call to run_fzf with a different list
-                run_fzf "list_default.sh"
+                # echo "Reloading FZF with default list..."
+                # echo "Selected: $SELECTED"
+
+                run_fzf "list_hosts.sh" "$SELECTED"
                 ;;
             *)
                 echo "Unknown TYPE: $TYPE"
@@ -45,5 +39,4 @@ run_fzf() {
     fi
 }
 
-# Initial FZF run with the default list
-run_fzf "list_category.sh"
+run_fzf "list_hosts.sh"

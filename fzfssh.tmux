@@ -4,9 +4,6 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$CURRENT_DIR/scripts"
 ACTIONS_DIR="$CURRENT_DIR/scripts/actions"
 
-# source "$SCRIPTS_DIR/parser.sh"
-# source "$SCRIPTS_DIR/actions.sh"
-
 tmux_option() {
     local option_value
     option_value="$(tmux show-option -gqv "$1")"
@@ -49,7 +46,6 @@ handle_args() {
     fi
 
     ALLHOSTS="$bind_all_hosts:reload($SCRIPTS_DIR/list_hosts.sh)"
-    # CATEGORY="$bind_category:reload($SCRIPTS_DIR/list_category.sh list)"
     CATEGORY="$bind_category:reload(\"$SCRIPTS_DIR/list_hosts.sh\" Category)"
     CONVERTJSON="$bind_convert_json:reload(pwsh $SCRIPTS_DIR/convert_to_json.ps1 >/dev/null 2>&1; $SCRIPTS_DIR/list_default.sh)"
 

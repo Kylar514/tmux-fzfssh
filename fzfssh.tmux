@@ -45,8 +45,8 @@ handle_args() {
         PREVIEW_LINE="$SCRIPTS_DIR/preview.sh {}"
     fi
 
-    ALLHOSTS="$bind_all_hosts:reload($SCRIPTS_DIR/list_hosts.sh)"
-    CATEGORY="$bind_category:reload(\"$SCRIPTS_DIR/list_hosts.sh\" Category)"
+    # ALLHOSTS="$bind_all_hosts:reload($SCRIPTS_DIR/list_hosts.sh)"
+    # CATEGORY="$bind_category:reload(\"$SCRIPTS_DIR/list_hosts.sh\" Category)"
     CONVERTJSON="$bind_convert_json:reload(pwsh $SCRIPTS_DIR/convert_to_json.ps1 >/dev/null 2>&1; $SCRIPTS_DIR/list_default.sh)"
 
 	KILL_SESSION="$bind_kill_session:execute-silent(tmux kill-session -t {})+reload(${SCRIPTS_DIR%/}/reload_sessions.sh)"
@@ -84,13 +84,18 @@ handle_args() {
 window_settings
 handle_binds
 handle_args
-tmux set-option -g @fzfssh-_built-args "$(declare -p args)"
+# tmux set-option -g @fzfssh-_built-args "$(declare -p args)"
+tmux set-option -g @fzfssh-_built-args "${args[*]}"
 
 hotkey=$(tmux_option "@fzfssh-bind" "c-f")
 prefix_on=$(tmux_option "@fzfssh-prefix" "on")
 
 if [ "$prefix_on" = "on" ]; then
-    tmux bind-key "$hotkey" run-shell "$SCRIPTS_DIR/fzfssh.sh"
+    # tmux bind-key "$hotkey" popup "pwsh -NoProfile $SCRIPTS_DIR/test.ps1 -InsideTmux"
+tmux popup "bash -c '$SCRIPTS_DIR/wrapper.sh & exit'"
 else
-    tmux bind-key -n "$hotkey" run-shell "$SCRIPTS_DIR/fzfssh.sh"
+tmux popup "bash -c '$SCRIPTS_DIR/wrapper.sh & exit'"
+    # tmux bind-key -n "$hotkey" run-shell "$SCRIPTS_DIR/fzfssh.sh"
+    # tmux bind-key "$hotkey" popup "pwsh -NoProfile $SCRIPTS_DIR/test.ps1 -InsideTmux"
+    # tmux bind-key "$hotkey" popup "pwsh -NoProfile $SCRIPTS_DIR/test.ps1"
 fi

@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-pwsh -NoProfile "$SCRIPTS_DIR/test.ps1" -InsideTmux
+echo 'hi'
+pwsh -NoProfile "/home/zeal/projects/tmux-fzfssh/scripts/test.ps1" -InsideTmux

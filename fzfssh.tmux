@@ -91,11 +91,19 @@ hotkey=$(tmux_option "@fzfssh-bind" "c-f")
 prefix_on=$(tmux_option "@fzfssh-prefix" "on")
 
 if [ "$prefix_on" = "on" ]; then
-    # tmux bind-key "$hotkey" popup "pwsh -NoProfile $SCRIPTS_DIR/test.ps1 -InsideTmux"
-tmux popup "bash -c '$SCRIPTS_DIR/wrapper.sh & exit'"
+    tmux bind-key "$hotkey" popup "pwsh -NoProfile $SCRIPTS_DIR/test.ps1 -InsideTmux"
+# tmux popup "bash -c '$SCRIPTS_DIR/wrapper.sh & exit'"
+# tmux popup bash -c "/home/zeal/projects/tmux-fzfssh/scripts/wrapper.sh"
+    # tmux bind-key run-shell ""
+    # tmux bind-key "$hotkey" run-shell "pwsh $SCRIPTS_DIR/test.ps1"
+    # tmux bind-key "$hotkey" run-shell "$SCRIPTS_DIR/wrapper.sh"
+    # tmux bind-key "$hotkey" run-shell "$SCRIPTS_DIR/fzfssh.sh"
 else
-tmux popup "bash -c '$SCRIPTS_DIR/wrapper.sh & exit'"
+# tmux popup "bash -c '$SCRIPTS_DIR/wrapper.sh & exit'"
+# tmux popup bash -c "/home/zeal/projects/tmux-fzfssh/scripts/wrapper.sh"
     # tmux bind-key -n "$hotkey" run-shell "$SCRIPTS_DIR/fzfssh.sh"
-    # tmux bind-key "$hotkey" popup "pwsh -NoProfile $SCRIPTS_DIR/test.ps1 -InsideTmux"
+    tmux bind-key "$hotkey" popup "pwsh -NoProfile $SCRIPTS_DIR/test.ps1 -InsideTmux"
     # tmux bind-key "$hotkey" popup "pwsh -NoProfile $SCRIPTS_DIR/test.ps1"
+    # tmux bind-key "$hotkey" run-shell "pwsh $SCRIPTS_DIR/test.ps1"
+    # tmux bind-key "$hotkey" run-shell "$SCRIPTS_DIR/wrapper.sh"
 fi

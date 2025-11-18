@@ -173,9 +173,8 @@ foreach ($sshHost in $selectedObjects)
 {
     $target = $sshHost.Hostname ?? $sshHost.Host
 
-    # Detached pane in main session
-    tmux run-shell "tmux split-window -v 'ssh $target'"
+    # Start-Process kitty -ArgumentList "--hold", "ssh $target"
+    tmux run-shell -b "tmux split-window -v 'ssh $target'"
 }
 
-# Script ends — popup closes
-exit
+Write-Host "Press Escape"

@@ -10,7 +10,7 @@ $fmt = "{0,-25} {1,-40} {2,-16} {3,-15} {4,-10}"
 
 $script:CachedConfig = $null
 
-function Safe-Substring($s, [int]$start, [int]$len) {
+function Get-Substring($s, [int]$start, [int]$len) {
     if (-not $s) { 
         return "" 
     }
@@ -25,7 +25,7 @@ function Format-HostLine($obj) {
     return $fmt -f $obj.Host, $obj.Comment, $obj.HostName, $obj.Id, $obj.Type
 }
 
-function Load-Config {
+function Import-HostConfig {
     if ($script:CachedConfig) {
         return $script:CachedConfig
     }
@@ -83,12 +83,12 @@ function Load-Config {
 }
 
 function Get-HostsByCategory($ids) {
-    $data = Load-Config
+    $data = Import-HostConfig
     return $data.Hosts | Where-Object { $_.Id -in $ids }
 }
 
-function Generate-Lines([object]$Filter) {
-    $data = Load-Config
+function Get-Hostlines([object]$Filter) {
+    $data = Import-HostConfig
     $hosts = $data.Hosts
     $categories = $data.Categories
 
@@ -115,21 +115,21 @@ function Generate-Lines([object]$Filter) {
         ForEach-Object { Format-HostLine $_ }
 }
 
-function Parse-Line($line) {
+function Convert-LineToObject($line) {
     if (-not $line) { 
         return $null 
     }
 
     return [PSCustomObject]@{
-        Host     = (Safe-Substring $line 0 25).Trim()
-        Comment  = (Safe-Substring $line 25 40).Trim()
-        HostName = (Safe-Substring $line 65 16).Trim()
-        Id       = (Safe-Substring $line 81 15).Trim()
-        Type     = (Safe-Substring $line 96 15).Trim()
+        Host     = (Get-Substring $line 0 25).Trim()
+        Comment  = (Get-Substring $line 25 40).Trim()
+        HostName = (Get-Substring $line 65 16).Trim()
+        Id       = (Get-Substring $line 81 15).Trim()
+        Type     = (Get-Substring $line 96 15).Trim()
     }
 }
 
-function Run-Fzf([string[]]$lines) {
+function Invoke-Fzf([string[]]$lines) {
     if (-not $lines -or $lines.Count -eq 0) { 
         return $null 
     }
@@ -151,7 +151,7 @@ function Run-Fzf([string[]]$lines) {
     return $lines | fzf @fzfArgs
 }
 
-function Handle-Actions($parsedObjects) {
+function Invoke-HostActions($parsedObjects) {
     $allHosts = @()
     foreach ($obj in $parsedObjects) {
         if (-not $obj) { 
@@ -165,12 +165,12 @@ function Handle-Actions($parsedObjects) {
             }
 
             $lines = $hosts | ForEach-Object { Format-HostLine $_ }
-            $sel = Run-Fzf $lines
+            $sel = Invoke-Fzf $lines
             if (-not $sel) { 
                 continue 
             }
 
-            $allHosts += ($sel -split "`n" | ForEach-Object { Parse-Line $_ })
+            $allHosts += ($sel -split "`n" | ForEach-Object { Convert-LineToObject $_ })
         } elseif ($obj.Type -eq "Host") {
             $allHosts += $obj
         }
@@ -199,21 +199,21 @@ function Handle-Actions($parsedObjects) {
 }
 
 if ($ListOnly) { 
-    Generate-Lines $Filter
+    Get-Hostlines $Filter
     exit
 }
 
-$lines = Generate-Lines $Filter
+$lines = Get-Hostlines $Filter
 if (-not $lines) { 
     exit 
 }
 
-$selectedLines = Run-Fzf $lines
+$selectedLines = Invoke-Fzf $lines
 if (-not $selectedLines){
     exit 
 }
 
-$firstParsed = $selectedLines -split "`n" | ForEach-Object { Parse-Line $_ }
+$firstParsed = $selectedLines -split "`n" | ForEach-Object { Convert-LineToObject $_ }
 
 $selectedCategories = $firstParsed | Where-Object { $_.Type -eq "Category" }
 
@@ -227,14 +227,14 @@ if ($selectedCategories) {
     }
 
     $lines2 = $hosts | ForEach-Object { Format-HostLine $_ }
-    $selection2 = Run-Fzf $lines2
+    $selection2 = Invoke-Fzf $lines2
     if (-not $selection2) {
         exit 
     }
 
-    $parsedSelection2 = $selection2 -split "`n" | ForEach-Object { Parse-Line $_ }
-    Handle-Actions $parsedSelection2
+    $parsedSelection2 = $selection2 -split "`n" | ForEach-Object { Convert-LineToObject $_ }
+    Invoke-HostActions $parsedSelection2
     exit
 }
 
-Handle-Actions $firstParsed
+Invoke-HostActions $firstParsed

@@ -33,11 +33,11 @@ cd HostActions
 
 ### Option 1 — PowerShell Native (Recommended)
 
-- Add `HostActions.ps1` to your PowerShell profile  
+- Add `Import-Module /path/to/dir/HostActions/` To Powershell profile
   **or**
-- Place the repo in your PowerShell modules directory.
+- Place the repo in your PowerShell modules directory, that is imported in your profile
 
-This allows you to run `HostActions` directly from any PowerShell session.
+This allows you to run `Start-HostActions` directly from any PowerShell session.
 
 ---
 
@@ -46,11 +46,12 @@ This allows you to run `HostActions` directly from any PowerShell session.
 Create an alias that runs the script through PowerShell:
 
 ```bash
-alias HostActions='pwsh /full/path/to/HostActions/HostActions.ps1'
+alias Start-HostActions="pwsh -Command Start-HostActions"
 ```
 
 > Important: This project **must** be executed using `pwsh`, even when launched
 > from Bash or Zsh.
+> NOTE this the module needs to still be imported to your powershell profile
 
 ---
 
@@ -59,10 +60,11 @@ alias HostActions='pwsh /full/path/to/HostActions/HostActions.ps1'
 Add the following to your `~/.tmux.conf`, then reload tmux:
 
 ```tmux
-bind-key C-f run-shell "pwsh /full/path/to/HostActions/HostActions.ps1"
+bind-key c-f run-shell "pwsh -Command Start-HostActions"
 ```
 
 > Make sure `pwsh` is explicitly included in the command.
+> NOTE this the module needs to still be imported to your powershell profile
 
 Reload tmux:
 

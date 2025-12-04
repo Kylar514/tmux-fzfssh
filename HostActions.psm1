@@ -1,5 +1,4 @@
-#!/usr/bin/env pwsh
-
+Function Start-HostActions {
 param(
     [string]$Filter,
     [switch]$ListOnly
@@ -134,7 +133,8 @@ function Invoke-Fzf([string[]]$lines) {
         return $null 
     }
 
-    $scriptQuoted = '"' + $PSCommandPath + '"'
+    $reloadAll = "Import-Module `"$PSScriptRoot/HostActions.psm1`"; Start-HostActions -ListOnly -Filter ''"
+    $reloadCat = "Import-Module `"$PSScriptRoot/HostActions.psm1`"; Start-HostActions -ListOnly -Filter Category"
 
     $fzfArgs = @(
         "--header", "enter=select • ctrl-a=All • ctrl-c=Categories"
@@ -144,8 +144,8 @@ function Invoke-Fzf([string[]]$lines) {
         "--exit-0"
         "--multi"
         "--tac"
-        "--bind=ctrl-a:reload(pwsh -NoProfile -Command ""$scriptQuoted -ListOnly -Filter ''"" )"
-        "--bind=ctrl-c:reload(pwsh -NoProfile -Command ""$scriptQuoted -ListOnly -Filter Category"" )"
+        "--bind=ctrl-a:reload(pwsh -NoProfile -Command `"$reloadAll`")"
+        "--bind=ctrl-c:reload(pwsh -NoProfile -Command `"$reloadCat`")"
     )
 
     return $lines | fzf @fzfArgs
@@ -178,7 +178,7 @@ function Invoke-HostActions($parsedObjects) {
 
     if (-not $allHosts) {
         Write-Host "No hosts selected."
-        exit
+        return
     }
 
     $chosenAction = Get-ChildItem "$PSScriptRoot/actions" -File |
@@ -191,7 +191,7 @@ function Invoke-HostActions($parsedObjects) {
             "--exit-0"
         )
 
-    if (-not $chosenAction) { exit }
+    if (-not $chosenAction) { return }
 
     $hostArgs = @($allHosts | ForEach-Object { $_.Host })
 
@@ -200,17 +200,17 @@ function Invoke-HostActions($parsedObjects) {
 
 if ($ListOnly) { 
     Get-Hostlines $Filter
-    exit
+    return
 }
 
 $lines = Get-Hostlines $Filter
 if (-not $lines) { 
-    exit 
+    return 
 }
 
 $selectedLines = Invoke-Fzf $lines
 if (-not $selectedLines){
-    exit 
+    return 
 }
 
 $firstParsed = $selectedLines -split "`n" | ForEach-Object { Convert-LineToObject $_ }
@@ -238,3 +238,4 @@ if ($selectedCategories) {
 }
 
 Invoke-HostActions $firstParsed
+}

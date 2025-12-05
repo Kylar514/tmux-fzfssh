@@ -1,6 +1,6 @@
 # HostActions
 
-**HostActions** is an interactive, FZF-driven PowerShell automation framework
+**HostActions** is an interactive, FZF-driven PowerShell ssh host automation tool
 for managing and executing actions across one or many SSH hosts—either
 sequentially or in parallel.
 
